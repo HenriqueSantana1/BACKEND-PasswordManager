@@ -13,10 +13,10 @@ const jwt = require('jsonwebtoken')
 const router = express.Router()
 
 router.post('/add', verifyJWT, async (req, res) => {
-    const { password, title } = req.body
+    const { password, title, login } = req.body
     const hashedPassword = await encrypt(password)
     try {
-        const pw = await Password.create({password: hashedPassword.content, title: title, iv: hashedPassword.iv, userId: req.userId})
+        const pw = await Password.create({password: hashedPassword.content, title: title, login: login, iv: hashedPassword.iv, userId: req.userId})
         pw.password = undefined
         return res.send({ pw })
     } catch (err) {
@@ -86,6 +86,12 @@ router.post('/signin', async (req, res) => {
     else {
         return res.status(400).send({error: 'E-mail não encontrado!'})
     }
+})
+
+router.get('/me', verifyJWT, async (req, res) => {
+    const query = await User.findOne({_id: req.userId})
+    query.password = undefined
+    return res.send(query)
 })
 
 router.delete('/delete/:id', verifyJWT, async (req, res) => {
