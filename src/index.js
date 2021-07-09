@@ -12,5 +12,5 @@ app.get('/', (req, res) => {
 
 require('./controllers/pwController')(app)
 
-app.listen(3001)
+app.listen(process.env.PORT || 5000)
 
